@@ -1,0 +1,31 @@
+table {
+  width: 48%; /* Set the width to fit two tables per row */
+  border-collapse: collapse;
+  margin-right: 2%; /* Ensure there's space between two tables */
+  box-sizing: border-box; /* Include padding and borders in the width */
+}
+
+th, td {
+  border: 1px solid #000;
+  padding: 5px;
+  text-align: left;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 20px; /* Space between each row of tables */
+}
+
+@media (max-width: 768px) {
+  table {
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 20px; /* Space between tables when stacked */
+  }
+
+  table:last-child {
+    margin-bottom: 0;
+  }
+}

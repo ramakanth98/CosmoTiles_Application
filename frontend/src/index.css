@@ -1,0 +1,88 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Add marble image as a background */
+  //background-image: url('marble.png');
+  background-size: cover; /* Ensure it covers the full page */
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed; /* Fix the background to prevent scrolling with the content */
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* The rest of your login page styles */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 80%;
+    max-width: 1200px;
+    margin: auto;
+    padding: 2%;
+    background: rgba(255, 255, 255, 0.8); /* Semi-transparent background for readability */
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+    flex-basis: 50%;
+    text-align: center;
+}
+
+.logo img {
+    width: auto; /* Logo width is automatic, height is set */
+    height: 350px; /* Increased logo height */
+}
+
+.login-form {
+    flex-basis: 50%; /* The login form takes up the remaining space */
+    padding: 20px;
+}
+
+.login-form form {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-form label {
+    font-size: 1.2em;
+    margin-bottom: .5em; /* Space below label */
+}
+
+.login-form input[type='text'],
+.login-form input[type='password'] {
+    padding: 10px;
+    margin-bottom: 1em; /* Space below inputs */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.login-form input[type='submit'] {
+    padding: 10px;
+    background-color: #4B0082; /* Darker purple for the button */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-form input[type='submit']:hover {
+    background-color: #7B68EE; /* Lighter purple for hover effect */
+}
+
+.login-form a {
+    margin-top: 1em; /* Space above the link */
+    color: #4B0082; /* Darker purple for the link */
+    text-decoration: none;
+    text-align: center; /* Center align the link */
+}
