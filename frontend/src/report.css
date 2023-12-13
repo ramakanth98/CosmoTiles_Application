@@ -1,5 +1,6 @@
 table {
-  width: 48%; /* Set the width to fit two tables per row */
+  margin: 20px; /* Adjust as needed */
+  width: 80%;/*calc(50% - 40px);*/
   border-collapse: collapse;
   margin-right: 2%; /* Ensure there's space between two tables */
   box-sizing: border-box; /* Include padding and borders in the width */
@@ -9,23 +10,89 @@ th, td {
   border: 1px solid #000;
   padding: 5px;
   text-align: left;
+  width: 125%;
+}
+
+/* Adjust the width of each column by targeting the th and td of each column */
+table tr th:nth-child(1), table tr td:nth-child(1) { /* Target the first column (WorkName) */
+  width: 125%; /* Adjust the percentage as needed */
+}
+
+table tr th:nth-child(2), table tr td:nth-child(2) { /* Target the second column (SQFT) */
+  width: 25%; /* Adjust the percentage as needed */
+}
+
+table tr th:nth-child(3), table tr td:nth-child(3) { /* Target the third column (Price) */
+  width: 25%; /* Adjust the percentage as needed */
+}
+
+table tr th:nth-child(4), table tr td:nth-child(4) { /* Target the fourth column (Total) */
+  width: 25%; /* Adjust the percentage as needed */
 }
 
 .row {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around; /* This will distribute space around the items */
   flex-wrap: wrap;
-  margin-bottom: 20px; /* Space between each row of tables */
+  gap: 20px; /* This will add space between the tables vertically and horizontally */
 }
 
 @media (max-width: 768px) {
   table {
-    width: 100%;
-    margin-right: 0;
-    margin-bottom: 20px; /* Space between tables when stacked */
-  }
+      width: calc(100% - 40px); /* Full width minus margin */
+      margin: 20px; /* Keep consistent margin */
+    }
 
   table:last-child {
     margin-bottom: 0;
   }
 }
+
+.table-heading {
+  margin-bottom: 1rem; /* Spacing below the heading */
+  text-align: center; /* Center the heading text if desired */
+}
+
+input[type='number'] {
+  width: 100%; /* Make input field take full width of its parent */
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 5px; /* Match padding to other table cells */
+  height: calc(1.5em + 10px); /* Adjust the value as needed */
+    box-sizing: border-box;
+}
+
+input[type='number'], td {
+  line-height: 1.5em; /* Adjust to match the line height of your table cells */
+}
+
+/* Make the input border visible only when the input is focused */
+input[type='number']:focus {
+  border: 1px solid #000;
+  outline: none;
+}
+
+/* Add this to ensure inputs are not too tall */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Add this to ensure inputs are not too tall for Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.grand-total-heading {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.grand-total {
+  text-align: center;
+  font-size: 1.5rem; /* Example size, adjust as needed */
+  margin-bottom: 20px;
+}
+

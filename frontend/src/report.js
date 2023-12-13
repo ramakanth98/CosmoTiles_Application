@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
-
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import './report.css';
 
 
 const initialRowData = [
     // Assuming this structure based on your description
     // Repeat this for each table with appropriate WorkName and Price
-    { workName: 'shower wall', sqft: "", price: 100, total: 0 },
+    { workName: 'shower wall', sqft: "", price: 10, total: 0 },
         { workName: 'Accent/2nd Gount', sqft: "", price: 100, total: 0 },
         { workName: 'Bench Seat', sqft: "", price: 100, total: 0 },
         { workName: 'Better Bench', sqft: "", price: 100, total: 0 },
         { workName: 'Corner Shelf', sqft: "", price: 100, total: 0 },
-        { workName: 'Single Niche', sqft: "0", price: 100, total: 0 },
-        { workName: 'Combo Niche', sqft: "0", price: 100, total: 0 },
+        { workName: 'Single Niche', sqft: "", price: 100, total: 0 },
+        { workName: 'Combo Niche', sqft: "", price: 100, total: 0 },
         { workName: 'XL Niche', sqft: "", price: 100, total: 0 },
         { workName: 'Shower Floor', sqft: "", price: 100, total: 0 },
         { workName: 'Shower Drain Grind', sqft: "", price: 100, total: 0 },
@@ -20,10 +21,21 @@ const initialRowData = [
         { workName: 'Windows/Jambs', sqft: "", price: 100, total: 0 },
 ];
 
+const initialKitchenData = [
+  { workName: 'Material Handling Fees', sqft: "", price: 150, total: 0 },
+  { workName: 'Great Room FirePlace', sqft: "", price: 120, total: 0 },
+  { workName: 'Laundry', sqft: "", price: 150, total: 0 },
+  { workName: 'Extra:', sqft: "", price: 120, total: 0 },
+
+];
+
 const initialTablesData = new Array(6).fill(null).map(() => initialRowData.map(row => ({ ...row })));
+
+
 
 const Report = () => {
   const [tables, setTables] = useState(initialTablesData);
+  const [kitchenTable, setKitchenTable] = useState(initialKitchenData);
 
   const handleSqftChange = (tableIndex, rowIndex, value) => {
     const updatedTables = tables.map((table, tIndex) => {
@@ -45,45 +57,138 @@ const Report = () => {
     return table.reduce((acc, row) => acc + parseFloat(row.total || 0), 0).toFixed(2);
   };
 
+  const handleKitchenSqftChange = (rowIndex, value) => {
+    const updatedKitchenTable = kitchenTable.map((row, rIndex) => {
+      if (rIndex === rowIndex) {
+        const total = parseFloat(value) * row.price;
+        return { ...row, sqft: value, total: isNaN(total) ? 0 : total.toFixed(2) };
+      }
+      return row;
+    });
+    setKitchenTable(updatedKitchenTable);
+  };
+
+  const calculateKitchenTableTotal = () => {
+    return kitchenTable.reduce((acc, row) => acc + parseFloat(row.total || 0), 0).toFixed(2);
+  };
+
+  const calculateGrandTotal = () => {
+    // Calculate the total for all Bath tables
+    const bathTotal = tables.reduce((acc, table) => {
+      return acc + parseFloat(calculateTableTotal(table));
+    }, 0);
+
+    // Calculate the total for the Kitchen table
+    const kitchenTotal = parseFloat(calculateKitchenTableTotal());
+
+    // Calculate the grand total
+    const grandTotal = bathTotal + kitchenTotal;
+
+    return grandTotal.toFixed(2); // Convert it to a fixed decimal place
+  };
+
+  const downloadReportAsPDF = () => {
+      // Use html2canvas to capture the content of the page
+      html2canvas(document.body).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({
+          orientation: 'landscape',
+          unit: 'px',
+          format: [canvas.width, canvas.height]
+        });
+        pdf.addImage(imgData, 'JPEG', 0, 0);
+        pdf.save('report.pdf');
+      });
+    };
+
   return (
-    <div className="row">
-      {tables.map((table, tableIndex) => (
-        <React.Fragment key={tableIndex}>
-          <table style={{ width: '48%', marginRight: '2%', marginBottom: '20px', boxSizing: 'border-box' }}>
-            <thead>
-              <tr>
-                <th>WorkName</th>
-                <th>SQFT</th>
-                <th>Price</th>
-                <th>Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              {table.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                  <td>{row.workName}</td>
-                  <td>
-                    <input
-                      type="number"
-                      value={row.sqft}
-                      onChange={(e) => handleSqftChange(tableIndex, rowIndex, e.target.value)}
-                    />
-                  </td>
-                  <td>{row.price}</td>
-                  <td>{row.total}</td>
+    <div className="container mt-3">
+      <div className="row">
+        {tables.map((table, tableIndex) => (
+          <div key={tableIndex} className="col-lg-6 table-container">
+          <h2 className="table-heading">Bath {tableIndex + 1}</h2>
+            <table className="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th>WorkName</th>
+                  <th>SQFT</th>
+                  <th>Price</th>
+                  <th>Total</th>
                 </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colSpan="3">Table Total</td>
-                <td>{calculateTableTotal(table)}</td>
-              </tr>
-            </tfoot>
-          </table>
-          {(tableIndex % 2 === 1) && <div style={{ flexBasis: '100%' }}></div>}
-        </React.Fragment>
-      ))}
+              </thead>
+              <tbody>
+                {table.map((row, rowIndex) => (
+                  <tr key={rowIndex}>
+                    <td>{row.workName}</td>
+                    <td>
+                      <input
+                        type="number"
+                        className="form-control"
+                        value={row.sqft}
+                        onChange={(e) => handleSqftChange(tableIndex, rowIndex, e.target.value)}
+                      />
+                    </td>
+                    <td>{row.price}</td>
+                    <td>{row.total}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colSpan="3">Table Total</td>
+                  <td>{calculateTableTotal(table)}</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        ))}
+      </div>
+       {/* New kitchen table */}
+          <div className="row">
+            <div className="col-lg-12 table-container">
+              <h2 className="table-heading">Additional Charges</h2>
+              <table className="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>WorkName</th>
+                    <th>SQFT</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {kitchenTable.map((row, rowIndex) => (
+                    <tr key={rowIndex}>
+                      <td>{row.workName}</td>
+                      <td>
+                        <input
+                          type="number"
+                          className="form-control"
+                          value={row.sqft}
+                          onChange={(e) => handleKitchenSqftChange(rowIndex, e.target.value)}
+                        />
+                      </td>
+                      <td>{row.price}</td>
+                      <td>{row.total}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colSpan="3">Table Total</td>
+                    <td>{calculateKitchenTableTotal()}</td>
+                  </tr>
+                  <div className="col-12">
+                          <h2 className="grand-total-heading">Grand Total</h2>
+                          <div className="grand-total">{calculateGrandTotal()}</div>
+                        </div>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+      <button onClick={downloadReportAsPDF} className="btn btn-primary">
+        Download Report
+      </button>
     </div>
   );
 };

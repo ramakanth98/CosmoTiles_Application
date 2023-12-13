@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/cosmo-sample.iml" filepath="$PROJECT_DIR$/cosmo-sample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/CosmoTiles_Application.iml" filepath="$PROJECT_DIR$/CosmoTiles_Application.iml" />
     </modules>
   </component>
 </project>

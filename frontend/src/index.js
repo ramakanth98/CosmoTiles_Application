@@ -1,21 +1,34 @@
 import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import NewPost from './newhome.js';
 import LoginPage from './LoginPage.js';
-import Report from './report.js'; // Import the Report component
+import Report from './report.js';
+import Home from './home.js';
 import reportWebVitals from './reportWebVitals';
 
 const Root = () => {
-  // Define a state to track whether the user is logged in or not
   const [loggedIn, setLoggedIn] = useState(false);
 
-  // Determine which component to render based on the user's authentication status
-  const content = loggedIn ? <Report /> : <LoginPage setLoggedIn={setLoggedIn} />;
-
-  return <React.StrictMode>{content}</React.StrictMode>;
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={loggedIn ? <Navigate to="/home" /> : <LoginPage setLoggedIn={setLoggedIn} />} />
+        <Route path="/home" element={loggedIn ? <Home /> : <Navigate to="/" />} />
+        <Route path="/new" element={<NewPost />} />
+        <Route path="/report" element={<Report />} />
+        {/* Add more routes as needed */}
+      </Routes>
+    </Router>
+  );
 };
 
 const rootElement = document.getElementById('root');
-ReactDOM.createRoot(rootElement).render(<Root />);
+const root = ReactDOM.createRoot(rootElement);
+root.render(
+  <React.StrictMode>
+    <Root />
+  </React.StrictMode>
+);
 
-// Performance measuring, can be removed if not used
 reportWebVitals();
