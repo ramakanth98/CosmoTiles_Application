@@ -344,9 +344,54 @@
 
   /* CSS class for report button group */
   .button-group {
-    display: flex; /* This will align children in a row */
-    justify-content: space-between; /* This will put some space between the buttons */
+    display: flex;
+    justify-content: center; /* Align buttons in the center of the container */
+    gap: 140px; /* Adjust the gap as needed */
   }
+
+  .button-group .accent-btn {
+    flex: 0 1 auto; /* Allow buttons to shrink and grow as needed, without dominating the space */
+    padding: 10px; /* Adjust the padding as needed */
+    /* ... other styles ... */
+  }
+
+  .success-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #d4edda;
+    color: #155724;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+  }
+
+  .card {
+       width: 250px; /* Adjust as needed */
+       height: 250px;
+      background-color: var(--clr-primary);
+      padding:20px;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+
+  .articles-wrapper {
+  margin-top: 40px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem; /* Adjust the gap as needed */
+      justify-content: center;
+  }
+
+  /* Responsive grid for the cards */
+  @media (min-width: 600px) {
+      .articles-wrapper {
+          grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      }
+  }
+
+
 
 
 

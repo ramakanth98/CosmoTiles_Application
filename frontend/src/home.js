@@ -1,67 +1,64 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
-import './styles.css'; // Adjust the path to your styles.css file
-
+import './styles.css';
 
 const Home = () => {
-    const MAX_LENGTH = 50; // Maximum length of the blog content shown
-    const PAGE_LIMIT = 12; // Number of blogs per page
-    const [posts, setPosts] = useState([]);
+    const PAGE_LIMIT = 12;
+    const [homes, setHomes] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [searchKey, setSearchKey] = useState('');
     const [error, setError] = useState('');
 
-    // Fetch posts
-    const getPosts = async () => {
+    const getHomes = async () => {
         try {
-            const url = `http://localhost:3000/posts?q=${searchKey}&_page=${currentPage}&_limit=${PAGE_LIMIT}&_sort=date&_order=desc`;
-            const response = await fetch(url);
-            const data = await response.json();
-            setPosts(data);
+            const response = await axios.get(`http://localhost:5000/api/homes?q=${searchKey}&_page=${currentPage}&_limit=${PAGE_LIMIT}`);
+            console.log("Response data:", response.data);
+            if (Array.isArray(response.data.data)) {
+                setHomes(response.data.data);
+            } else {
+                setError("Invalid data format received from API");
+                console.error("Response is not an array:", response.data);
+            }
         } catch (err) {
             setError(err.message);
         }
     };
 
-    // Handle page change
-    const switchPage = (newPage) => {
-        setCurrentPage(newPage);
-    };
-
-    // Handle search change
-    const handleSearch = async (event) => {
-            setSearchKey(event.target.value);
-            setCurrentPage(1);
-        };
-
     useEffect(() => {
-        getPosts();
+        getHomes();
     }, [currentPage, searchKey]);
 
     return (
         <>
-          <header>
-            <Link to="/"><h1>DEV Circle</h1></Link>
-            <div className="search-bar">
-              <FontAwesomeIcon icon={faMagnifyingGlass} />
-              <input
-                type="search"
-                placeholder="search"
-                value={searchKey}
-                onChange={handleSearch}
-              />
-            </div>
-            <Link to="/new" className="accent-btn">
-              <FontAwesomeIcon icon={faPenToSquare} /> Write
-            </Link>
-          </header>
-          <main>
-            {/* Notification, articles, and pagination will go here */}
-          </main>
+            <header>
+                <Link to="/"><h1>Cosmo Tiles</h1></Link>
+                <div className="search-bar">
+                    <FontAwesomeIcon icon={faMagnifyingGlass} />
+                    <input type="search" placeholder="search" value={searchKey} onChange={(e) => setSearchKey(e.target.value)} />
+                </div>
+                <Link to="/new" className="accent-btn">
+                    <FontAwesomeIcon icon={faPenToSquare} /> Write
+                </Link>
+            </header>
+            <main>
+                {error && <div className="notification">{error}</div>}
+                <div className="articles-wrapper">
+                    {homes.map((home) => ( // Removed 'index' as key should be unique and not index-based if possible
+                        <Link to={`/home/${home.id}`} key={home.id} className="card-link"> {/* Use `home.id` to construct the link */}
+                            <div className="card">
+                                <h2>{home.home}</h2> {/* Assuming `home.home` is the field for the home's name */}
+                                <p>{home.address}</p>
+                                {/* Optionally add a button or icon to signify clickable cards */}
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            </main>
         </>
-      );
+    );
 };
 
 export default Home;

@@ -88,18 +88,20 @@ const Report = () => {
   };
 
   const downloadReportAsPDF = () => {
-      // Use html2canvas to capture the content of the page
-      html2canvas(document.body).then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF({
-          orientation: 'landscape',
-          unit: 'px',
-          format: [canvas.width, canvas.height]
-        });
-        pdf.addImage(imgData, 'JPEG', 0, 0);
-        pdf.save('report.pdf');
+    html2canvas(document.body, {
+      scale: 2, // Increase or decrease scale to fit the content
+      useCORS: true // This can help with images, if you have any
+    }).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({
+        orientation: 'landscape',
+        unit: 'px',
+        format: 'a4'
       });
-    };
+      pdf.addImage(imgData, 'JPEG', 0, 0);
+      pdf.save('report.pdf');
+    });
+  };
 
   return (
     <div className="container mt-3">

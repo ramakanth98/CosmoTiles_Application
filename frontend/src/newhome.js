@@ -1,52 +1,39 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 import './styles.css';
 
 const NewPost = () => {
   const [title, setTitle] = useState('');
-  const [author, setAuthor] = useState('');
+  const [address, setAddress] = useState('');
+  const [file, setFile] = useState(null);
   const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
 
   const submitPost = async () => {
-    const id = await getNextID();
-    const post = {
-      id,
-      title,
-      author,
-      date: new Date().toISOString(),
-      profile: "images/default.jpeg",
-      content: '' // If you had a content field, you would manage it in state as well
-    };
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('address', address);
+    formData.append('file', file);
+
     try {
-      const response = await fetch("http://localhost:3000/posts", {
-        method: "POST",
+      const response = await axios.post('http://localhost:5000/api/newpost', formData, {
         headers: {
-          "Content-Type": "application/json"
+          'Content-Type': 'multipart/form-data',
         },
-        body: JSON.stringify(post)
       });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      await response.json();
-      // Redirect or handle the response upon success
-    } catch (err) {
-      notifyError(err);
-    }
-  };
 
-  const getNextID = async () => {
-    try {
-      const response = await fetch("http://localhost:3000/posts");
-      const posts = await response.json();
-      return Math.max(0, ...posts.map(post => post.id)) + 1;
-    } catch (err) {
-      notifyError(err);
-    }
-  };
+      console.log("Data saved successfully");
+      setSuccessMsg("Home added successfully!");
 
-  const notifyError = (err) => {
-    setError(err.message);
+      setTimeout(() => {
+        setSuccessMsg('');
+      }, 3000);
+
+    } catch (error) {
+      console.error("Error saving data", error);
+      setError(error.message);
+    }
   };
 
   const handleFormSubmit = async (event) => {
@@ -57,13 +44,18 @@ const NewPost = () => {
   return (
     <>
       <header className="flex-row">
-        {/* ... */}
+        <Link to="/"><h1>Cosmo Tiles</h1></Link>
       </header>
       <main>
         {error && (
           <div className="notification-container">
             <div className="notification">{error}</div>
             <button type="button" className="close" onClick={() => setError('')}>&times;</button>
+          </div>
+        )}
+        {successMsg && (
+          <div className="success-container">
+            <div className="success-message">{successMsg}</div>
           </div>
         )}
         <div className="form-container">
@@ -80,21 +72,26 @@ const NewPost = () => {
               />
             </div>
             <div>
-              <label htmlFor="author">Address</label>
+              <label htmlFor="address">Address</label>
               <input
-                id="author"
+                id="address"
                 type="text"
                 minLength="3"
                 required
-                value={author}
-                onChange={(e) => setAuthor(e.target.value)}
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
               />
             </div>
-            {/* ... Other input fields ... */}
-            <Link to="/report" className="accent-btn"> SC Report </Link>
-            <button type="submit" className="accent-btn">Report2</button>
-            <button type="submit" className="accent-btn">Report3</button>
-            <button type="submit" className="accent-btn">Report4</button>
+            <div>
+              <label htmlFor="file">Upload Vendor PDF</label>
+              <input
+                type="file"
+                id="file"
+                accept="application/pdf"
+                onChange={(e) => setFile(e.target.files[0])}
+              />
+            </div>
+            <button type="submit" className="accent-btn">Submit</button>
           </form>
         </div>
       </main>
