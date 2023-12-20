@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import axios from 'axios';
 import './report.css';
+
 
 
 const initialRowData = [
@@ -31,6 +32,17 @@ const initialKitchenData = [
 
 const initialTablesData = new Array(6).fill(null).map(() => initialRowData.map(row => ({ ...row })));
 
+//const puppeteer = require('puppeteer');
+
+/*async function printPDF() {
+  const browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
+  await page.goto('http://localhost:3000/report', { waitUntil: 'networkidle0' });
+  const pdf = await page.pdf({ format: 'A4' });
+
+  await browser.close();
+  return pdf;
+}*/
 
 
 const Report = () => {
@@ -87,7 +99,7 @@ const Report = () => {
     return grandTotal.toFixed(2); // Convert it to a fixed decimal place
   };
 
-  const downloadReportAsPDF = () => {
+  /*const downloadReportAsPDF = () => {
     html2canvas(document.body, {
       scale: 2, // Increase or decrease scale to fit the content
       useCORS: true // This can help with images, if you have any
@@ -101,7 +113,50 @@ const Report = () => {
       pdf.addImage(imgData, 'JPEG', 0, 0);
       pdf.save('report.pdf');
     });
+  };*/
+
+  const downloadReportAsPDF = () => {
+    const reportData = {
+      bathTables: tables.map(table => {
+          return {
+              rows: table.map(row => ({
+                  workName: row.workName,
+                  sqft: row.sqft,
+                  price: row.price,
+                  total: row.total
+              })),
+              tableTotal: calculateTableTotal(table)
+          };
+      }),
+      kitchenTable: {
+          rows: kitchenTable.map(row => ({
+              workName: row.workName,
+              sqft: row.sqft,
+              price: row.price,
+              total: row.total
+          })),
+          tableTotal: calculateKitchenTableTotal()
+      },
+      grandTotal: calculateGrandTotal()
   };
+
+  axios.post('http://localhost:5000/generate-pdf', reportData, {
+      responseType: 'blob'
+  })
+    .then(response => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'report.pdf');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+    })
+    .catch(error => console.error('Error:', error));
+};
+
+
 
   return (
     <div className="container mt-3">
