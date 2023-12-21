@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './index.css'; 
-import logo from './Cos (1).png';
-import { Link } from 'react-router-dom';
-import marble from './marble.png';
+import logo from './cosmopolitan-logo.png';
 
 const LoginPage = ({ setLoggedIn }) => { // Receive setLoggedIn prop from the parent component
   const [username, setUsername] = useState('');
@@ -29,71 +27,34 @@ const LoginPage = ({ setLoggedIn }) => { // Receive setLoggedIn prop from the pa
   };
 
   return (
-    <div className="login-container" style={{ backgroundImage: `url(${marble})` }}>
+    <div className="login-container" style={{ backgroundImage: 'url("marble.png")' }}>
       <div className="logo">
         <img src={logo} alt="Cosmopolitan Tile and Granite Logo" />
       </div>
       <div className="login-form">
-      <form id="loginForm" onSubmit={handleLogin}>
-        <div className="form-group">
+        <form id="loginForm" onSubmit={handleLogin}>
+          <label htmlFor="username">Username:</label>
           <input
             type="text"
             id="username"
             name="username"
-            className="form-input"
-            placeholder="Username" // Placeholder added here
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-        <div className="form-group">
+          /><br /><br />
+          <label htmlFor="password">Password:</label>
           <input
             type="password"
             id="password"
             name="password"
-            className="form-input"
-            placeholder="Password" // Placeholder added here
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-        <input type="submit" value="Login" className="form-submit" />
-      </form>
-        {/* <p><a href="#" className="form-link">Register / Create Account</a></p> */}
-        <p><Link to="/register" className="form-link">Register / Create Account</Link></p>
+          /><br /><br />
+          <input type="submit" value="Login" />
+        </form>
+        <p><a href="#">Register / Create Account</a></p>
       </div>
     </div>
   );
 };
-//   return (
-//     <div className="login-container" style={{ backgroundImage: 'url("marble.png")' }}>
-//       <div className="logo">
-//         <img src={logo} alt="Cosmopolitan Tile and Granite Logo" />
-//       </div>
-//       <div className="login-form">
-//         <form id="loginForm" onSubmit={handleLogin}>
-//           <label htmlFor="username">Username:</label>
-//           <input
-//             type="text"
-//             id="username"
-//             name="username"
-//             value={username}
-//             onChange={(e) => setUsername(e.target.value)}
-//           /><br /><br />
-//           <label htmlFor="password">Password:</label>
-//           <input
-//             type="password"
-//             id="password"
-//             name="password"
-//             value={password}
-//             onChange={(e) => setPassword(e.target.value)}
-//           /><br /><br />
-//           <input type="submit" value="Login" />
-//         </form>
-//         <p><a href="#">Register / Create Account</a></p>
-//       </div>
-//     </div>
-//   );
-// };
 
 export default LoginPage;

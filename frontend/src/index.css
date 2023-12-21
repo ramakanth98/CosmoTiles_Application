@@ -7,7 +7,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* Add marble image as a background */
-  background-image: url('tiles.png');
+  //background-image: url('marble.png');
   background-size: cover; /* Ensure it covers the full page */
   background-repeat: no-repeat;
   background-position: center;
@@ -60,7 +60,6 @@ code {
 
 .login-form input[type='text'],
 .login-form input[type='password'] {
-    width: 75%;
     padding: 10px;
     margin-bottom: 1em; /* Space below inputs */
     border: 1px solid #ddd;
@@ -68,9 +67,8 @@ code {
 }
 
 .login-form input[type='submit'] {
-    width: 75%;
     padding: 10px;
-    background-color: #4b8fd3; /* Darker purple for the button */
+    background-color: #4B0082; /* Darker purple for the button */
     color: white;
     border: none;
     border-radius: 4px;
@@ -79,14 +77,12 @@ code {
 }
 
 .login-form input[type='submit']:hover {
-    background-color: #2680da; /* Lighter purple for hover effect */
+    background-color: #7B68EE; /* Lighter purple for hover effect */
 }
 
 .login-form a {
     margin-top: 1em; /* Space above the link */
-    color: #0f04a7; /* Darker purple for the link */
+    color: #4B0082; /* Darker purple for the link */
     text-decoration: none;
-    text-decoration: underline;
     text-align: center; /* Center align the link */
-    margin-left: -25%;
 }

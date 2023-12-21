@@ -7,7 +7,6 @@ import Report from './report.js';
 import Home from './home.js';
 import HomeDetail from './homedetail.js'; // Import the HomeDetail component
 import reportWebVitals from './reportWebVitals';
-import RegisterPage from './RegisterPage.js';
 
 const Root = () => {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -20,7 +19,6 @@ const Root = () => {
         <Route path="/home/:homeId" element={loggedIn ? <HomeDetail /> : <Navigate to="/" />} /> {/* Add this line */}
         <Route path="/new" element={loggedIn ? <NewPost /> : <Navigate to="/" />} />
         <Route path="/report" element={loggedIn ? <Report /> : <Navigate to="/" />} />
-        <Route path="/register" element={<RegisterPage />} />
         {/* Add more routes as needed */}
       </Routes>
     </Router>
