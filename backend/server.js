@@ -6,13 +6,15 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const multer = require('multer');
 const AWS = require('aws-sdk');
+const { v4: uuidv4 } = require('uuid');
+require('dotenv').config();
 
 // Set up MySQL connection
 const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  database: 'cosmo_db'
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
 });
 
 connection.connect(err => {
@@ -30,9 +32,9 @@ connection.connect(err => {
 
 // Configure AWS S3
   AWS.config.update({
-    accessKeyId: "AKIASZASMGKR25BFESDE",
-    secretAccessKey: "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",
-    region: "us-east-1"
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    region: process.env.AWS_REGION
   });
 
   const s3 = new AWS.S3();
@@ -141,34 +143,7 @@ connection.connect(err => {
    });
  });
 
-//  app.post('/generate-pdf', async (req, res) => {
-//      try {
-//          const browser = await puppeteer.launch();
-//          const page = await browser.newPage();
 
-//          // Construct HTML content from the data received
-//          const reportData = req.body;
-//          let htmlContent = `<html><head><style>/* Your CSS styles here */</style></head><body>`;
-//          // Add HTML for tables, data, etc., based on reportData
-//          // For example:
-//          // htmlContent += `<h1>Report</h1>`;
-//          // Iterate through tables and other data in reportData to construct the HTML
-
-//          htmlContent += `</body></html>`;
-
-//          await page.setContent(htmlContent);
-//          const pdf = await page.pdf({ format: 'A4' });
-
-//          await browser.close();
-
-//          res.setHeader('Content-Type', 'application/pdf');
-//          res.setHeader('Content-Disposition', 'attachment; filename=report.pdf');
-//          res.send(pdf);
-//      } catch (error) {
-//          console.error('Error generating PDF:', error);
-//          res.status(500).send('Error generating PDF');
-//      }
-//  });
 
 app.post('/generate-pdf', async (req, res) => {
     try {
@@ -234,13 +209,43 @@ app.post('/generate-pdf', async (req, res) => {
         htmlContent += `</body></html>`;
 
         await page.setContent(htmlContent);
-        const pdf = await page.pdf({ format: 'A2' });
+        const pdfBuffer = await page.pdf({ format: 'A2' });
 
         await browser.close();
 
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'attachment; filename=report.pdf');
-        res.send(pdf);
+
+        // Generate a unique filename
+            const fileName = `report-${uuidv4()}.pdf`;
+
+        // Upload the PDF to S3
+        const s3Params = {
+            Bucket: "screport-pdf",
+            Key: fileName,
+            Body: pdfBuffer,
+            ContentType: 'application/pdf',
+            ACL: 'public-read'
+        };
+
+        s3.upload(s3Params, async (err, s3Data) => {
+            if (err) {
+                console.error('Error uploading to S3', err);
+                return res.status(500).send('Error uploading to S3');
+            }
+
+            // SQL to update or insert the PDF URL in the database
+            const updateSql = 'UPDATE HOMES SET screport_url = ? WHERE id = ?';
+            connection.query(updateSql, [s3Data.Location, reportData.homeId], (updateErr, updateResult) => {
+                    if (updateErr) {
+                      throw new Error('Error updating database');
+                    }
+
+                    // Send the PDF in the response
+                    res.setHeader('Content-Type', 'application/pdf');
+                    res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+                    res.send(pdfBuffer);
+               });
+        });
+
     } catch (error) {
         console.error('Error generating PDF:', error);
         res.status(500).send('Error generating PDF');
@@ -251,7 +256,7 @@ app.post('/generate-pdf', async (req, res) => {
 
 
   
-const port = 5000;
+const port = process.env.PORT;
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
 });

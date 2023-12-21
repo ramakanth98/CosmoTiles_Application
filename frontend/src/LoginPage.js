@@ -16,12 +16,18 @@ const LoginPage = ({ setLoggedIn }) => { // Receive setLoggedIn prop from the pa
       });
       console.log(response.data);
 
-      // If login is successful, setLoggedIn to true to trigger redirection
-      setLoggedIn(true);
+      if (response.data.success) {
+        // If login is successful, setLoggedIn to true to trigger redirection
+        setLoggedIn(true);
+        // Handle further actions upon successful login (e.g., redirecting the user)
+      } else {
+        // If login is not successful, show an error message
+        alert(response.data.message); // You can replace this with a more elegant solution
+      }
 
       // Handle further actions upon successful login (e.g., redirecting the user)
     } catch (error) {
-      console.error('Login error raa', error);
+      console.error('Login error', error);
       // Handle login errors (e.g., displaying a message to the user)
     }
   };

@@ -146,3 +146,14 @@ input[type='number'] {
   }
 }
 
+.btn-container {
+    display: flex;
+    justify-content: space-between; /* This will space out the buttons */
+    margin-top: 20px; /* Add some space above the button container */
+}
+
+.btn {
+    margin: 0 10px; /* Add some margin around each button */
+}
+
+

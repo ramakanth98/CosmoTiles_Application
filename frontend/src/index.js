@@ -18,7 +18,7 @@ const Root = () => {
         <Route path="/home" element={loggedIn ? <Home /> : <Navigate to="/" />} />
         <Route path="/home/:homeId" element={loggedIn ? <HomeDetail /> : <Navigate to="/" />} /> {/* Add this line */}
         <Route path="/new" element={loggedIn ? <NewPost /> : <Navigate to="/" />} />
-        <Route path="/report" element={loggedIn ? <Report /> : <Navigate to="/" />} />
+        <Route path="/report/:homeId" element={loggedIn ? <Report /> : <Navigate to="/" />} />
         {/* Add more routes as needed */}
       </Routes>
     </Router>

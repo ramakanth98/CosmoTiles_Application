@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import jsPDF from 'jspdf';
 import axios from 'axios';
 import './report.css';
@@ -48,6 +49,7 @@ const initialTablesData = new Array(6).fill(null).map(() => initialRowData.map(r
 const Report = () => {
   const [tables, setTables] = useState(initialTablesData);
   const [kitchenTable, setKitchenTable] = useState(initialKitchenData);
+  let { homeId } = useParams();
 
   const handleSqftChange = (tableIndex, rowIndex, value) => {
     const updatedTables = tables.map((table, tIndex) => {
@@ -115,8 +117,26 @@ const Report = () => {
     });
   };*/
 
+  const downloadPDFDirectly = () => {
+          axios.get(`http://localhost:5000/api/homes/${homeId}`)
+              .then(response => {
+                  if (response.data && response.data.data && response.data.data.screport_url) {
+                      const pdfUrl = response.data.data.screport_url;
+                      window.open(pdfUrl, '_blank');
+                  } else {
+                      alert("No PDF available for download.");
+                  }
+              })
+              .catch(error => {
+                  console.error('Error fetching PDF URL:', error);
+                  alert("Error fetching PDF URL.");
+              });
+      };
+
   const downloadReportAsPDF = () => {
+
     const reportData = {
+      homeId,
       bathTables: tables.map(table => {
           return {
               rows: table.map(row => ({
@@ -243,9 +263,15 @@ const Report = () => {
               </table>
             </div>
           </div>
-      <button onClick={downloadReportAsPDF} className="btn btn-primary">
-        Download Report
-      </button>
+      <div className="btn-container">
+          <button onClick={downloadReportAsPDF} className="btn btn-primary">
+              Generate Report
+          </button>
+
+          <button onClick={downloadPDFDirectly} className="btn btn-secondary">
+              Download Existing Report
+          </button>
+      </div>
     </div>
   );
 };

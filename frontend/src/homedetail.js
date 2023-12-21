@@ -54,7 +54,7 @@ const HomeDetail = () => {
       )}
 
       <div className="button-group">
-            <Link to="/report" className="accent-btn"> SC Report </Link>
+            <Link to={`/report/${homeId}`} className="accent-btn"> SC Report </Link>
             <button type="button" className="accent-btn">Report2</button>
             <button type="button" className="accent-btn">Report3</button>
             <button type="button" className="accent-btn">Report4</button>
