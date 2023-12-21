@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMagnifyingGlass, faPenToSquare } from '@fortawesome/free-solid-svg-icons';
 import './styles.css';
+import logo from './Cos_NoBG.png'
 
 const Home = () => {
     const PAGE_LIMIT = 12;
@@ -23,9 +24,13 @@ const Home = () => {
                 console.error("Response is not an array:", response.data);
             }
         } catch (err) {
-            setError(err.message);
+            // Clear any previous errors
+            setError(''); // Set error to an empty string to hide the error message
+            console.error(err.message); // Optional: log the error message to the console
         }
     };
+    
+
 
     useEffect(() => {
         getHomes();
@@ -34,13 +39,16 @@ const Home = () => {
     return (
         <>
             <header>
-                <Link to="/"><h1>Cosmo Tiles</h1></Link>
+                {/* <Link to="/"><h1>Cosmo Tiles</h1></Link> */}
+                <Link to="/">
+                    <img src={logo} alt="Cosmo Tiles Logo" className="logo" /> {/* Logo instead of text */}
+                </Link>
                 <div className="search-bar">
                     <FontAwesomeIcon icon={faMagnifyingGlass} />
                     <input type="search" placeholder="search" value={searchKey} onChange={(e) => setSearchKey(e.target.value)} />
                 </div>
                 <Link to="/new" className="accent-btn">
-                    <FontAwesomeIcon icon={faPenToSquare} /> Write
+                    <FontAwesomeIcon icon={faPenToSquare} /> Add home
                 </Link>
             </header>
             <main>

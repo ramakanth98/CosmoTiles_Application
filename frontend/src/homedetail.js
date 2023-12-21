@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
+import logo from './Cos_NoBG.png'
 
 const HomeDetail = () => {
   const [homeDetails, setHomeDetails] = useState(null);
@@ -35,18 +36,23 @@ const HomeDetail = () => {
 
   return (
     <div>
-      <header>
+      {/* <header>
           <Link to="/"><h1>Cosmo Tiles</h1></Link>
-      </header>
-      <h1>Home Details:</h1>
+      </header> */}
+      <Link to="/">
+          <img src={logo} alt="Cosmo Tiles Logo" className="logo" /> {/* Logo instead of text */}
+      </Link>
+      {/* <h1><center></center>Home Details:</h1> */}
       {homeDetails ? (
         <div>
-          <h2>Home Name: {homeDetails.home}</h2>
-          <p>Address: {homeDetails.address}</p>
+          <h2 className='home-name'><center>Home Name: {homeDetails.home}</center></h2>
+          <h3 className="home-address" style={{ color: '#510564', textAlign: 'center' }}>Address: {homeDetails.address}</h3>
           {homeDetails.pdf_url && (
+            <center>
             <a href={homeDetails.pdf_url} target="_blank" rel="noopener noreferrer" download className="accent-btn">
-              Download PDF
+              Download Vendor PDF
             </a>
+            </center>
           )}
         </div>
       ) : (

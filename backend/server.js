@@ -11,8 +11,8 @@ const AWS = require('aws-sdk');
 const connection = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'root',
-  database: 'cosmo_db'
+  password: '123456789',
+  database: 'cosmotiles'
 });
 
 connection.connect(err => {
