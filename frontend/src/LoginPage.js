@@ -17,15 +17,15 @@ const LoginPage = ({ setLoggedIn }) => { // Receive setLoggedIn prop from the pa
       });
       console.log(response.data);
 
-      // if (response.data.success) {
-      //   // If login is successful, setLoggedIn to true to trigger redirection
-      //   setLoggedIn(true);
-      //   // Handle further actions upon successful login (e.g., redirecting the user)
-      // } else {
-      //   // If login is not successful, show an error message
-      //   alert(response.data.message); // You can replace this with a more elegant solution
-      // }
-      setLoggedIn(true);
+       if (response.data.success) {
+         // If login is successful, setLoggedIn to true to trigger redirection
+         setLoggedIn(true);
+         // Handle further actions upon successful login (e.g., redirecting the user)
+       } else {
+         // If login is not successful, show an error message
+         alert(response.data.message); // You can replace this with a more elegant solution
+       }
+      //setLoggedIn(true);
 
       // Handle further actions upon successful login (e.g., redirecting the user)
     } catch (error) {
