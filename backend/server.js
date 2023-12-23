@@ -252,6 +252,113 @@ app.post('/generate-pdf', async (req, res) => {
     }
 });
 
+app.post('/generateinvoice-pdf', async (req, res) => {
+    try {
+        const reportData = req.body; // Data from the front-end
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+
+        // Construct HTML content from reportData
+        let htmlContent = `
+        <html>
+        <head>
+            <style>
+                body { font-family: Arial, sans-serif; }
+                .table-container {
+                    display: grid;
+                    grid-template-columns: repeat(2, 1fr); /* 2 tables per row */
+                    grid-gap: 20px;
+                    margin-bottom: 20px;
+                }
+                table {
+                    border-collapse: collapse;
+                    width: 100%;
+                }
+                th, td {
+                    border: 1px solid black;
+                    padding: 5px;
+                    text-align: left;
+                }
+                .grand-total {
+                    font-size: 1.2em;
+                    font-weight: bold;
+                }
+            </style>
+        </head>
+        <body>
+            <h1>Report</h1>`;
+
+        // Group bath tables into pairs
+        for (let i = 0; i < reportData.bathTables.length; i += 2) {
+            htmlContent += `<div class="table-container">`;
+            for (let j = i; j < i + 2 && j < reportData.bathTables.length; j++) {
+                htmlContent += `<div><h2>Bath ${j + 1}</h2><table>`;
+                htmlContent += `<tr><th>WorkName</th><th>SQFT</th><th>Price</th><th>Total</th></tr>`;
+                reportData.bathTables[j].rows.forEach(row => {
+                    htmlContent += `<tr><td>${row.workName}</td><td>${row.sqft}</td><td>${row.price}</td><td>${row.total}</td></tr>`;
+                });
+                htmlContent += `<tr><td colspan="3">Table Total</td><td>${reportData.bathTables[j].tableTotal}</td></tr></table></div>`;
+            }
+            htmlContent += `</div>`;
+        }
+
+        // Kitchen table (if needed, you can also apply the grid layout to the kitchen table)
+        htmlContent += `<h2>Additional Charges</h2><table>`;
+        htmlContent += `<tr><th>WorkName</th><th>SQFT</th><th>Price</th><th>Total</th></tr>`;
+        reportData.kitchenTable.rows.forEach(row => {
+            htmlContent += `<tr><td>${row.workName}</td><td>${row.sqft}</td><td>${row.price}</td><td>${row.total}</td></tr>`;
+        });
+        htmlContent += `<tr><td colspan="3">Table Total</td><td>${reportData.kitchenTable.tableTotal}</td></tr></table>`;
+
+        // Grand Total
+        htmlContent += `<div class="grand-total">Grand Total: ${reportData.grandTotal}</div>`;
+
+        htmlContent += `</body></html>`;
+
+        await page.setContent(htmlContent);
+        const pdfBuffer = await page.pdf({ format: 'A2' });
+
+        await browser.close();
+
+
+        // Generate a unique filename
+            const fileName = `report-${uuidv4()}.pdf`;
+
+        // Upload the PDF to S3
+        const s3Params = {
+            Bucket: "invoiceurl-pdf",
+            Key: fileName,
+            Body: pdfBuffer,
+            ContentType: 'application/pdf',
+            ACL: 'public-read'
+        };
+
+        s3.upload(s3Params, async (err, s3Data) => {
+            if (err) {
+                console.error('Error uploading to S3', err);
+                return res.status(500).send('Error uploading to S3');
+            }
+
+            // SQL to update or insert the PDF URL in the database
+            const updateSql = 'UPDATE HOMES SET invoice_url = ? WHERE id = ?';
+            connection.query(updateSql, [s3Data.Location, reportData.homeId], (updateErr, updateResult) => {
+                    if (updateErr) {
+                      throw new Error('Error updating database');
+                    }
+
+                    // Send the PDF in the response
+                    res.setHeader('Content-Type', 'application/pdf');
+                    res.setHeader('Content-Disposition', 'attachment; filename=' + fileName);
+                    res.send(pdfBuffer);
+               });
+        });
+
+    } catch (error) {
+        console.error('Error generating PDF:', error);
+        res.status(500).send('Error generating PDF');
+    }
+});
+
 
 
 
