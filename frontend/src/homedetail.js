@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, Link } from 'react-router-dom';
+import logo from './Cos_NoBG.png'
 
 const HomeDetail = () => {
   const [homeDetails, setHomeDetails] = useState(null);
@@ -35,32 +36,34 @@ const HomeDetail = () => {
 
   return (
     <div>
-      <header>
-          <Link to="/"><h1>Cosmo Tiles</h1></Link>
-      </header>
-      <h1>Home Details:</h1>
+      <Link to="/">
+        <img src={logo} alt="Cosmo Tiles Logo" className="logo" /> {/* Logo only appears once */}
+      </Link>
+  
       {homeDetails ? (
         <div>
-          <h2>Home Name: {homeDetails.home}</h2>
-          <p>Address: {homeDetails.address}</p>
-          {homeDetails.pdf_url && (
-            <a href={homeDetails.pdf_url} target="_blank" rel="noopener noreferrer" download className="accent-btn">
-              Download PDF
-            </a>
-          )}
-        </div>
-      ) : (
-        <div>Home not found.</div>
-      )}
-
-      <div className="button-group">
+          <center>
+            <h2 className='home-name'>Home Name: {homeDetails.home}</h2>
+            <h3 className="home-address">Address: {homeDetails.address}</h3>
+            
+            {homeDetails.pdf_url && (
+              <a href={homeDetails.pdf_url} target="_blank" rel="noopener noreferrer" download className="accent-btn">
+                Download PDF
+              </a>
+            )}
+          </center>
+          
+          <div>
             <Link to={`/report/${homeId}`} className="accent-btn"> SC Report </Link>
             <button type="button" className="accent-btn">Report2</button>
             <button type="button" className="accent-btn">Report3</button>
             <button type="button" className="accent-btn">Report4</button>
-      </div>
+          </div>
+        </div>
+      ) : (
+        <div>Home not found.</div>
+      )}
     </div>
   );
-};
-
+      }  
 export default HomeDetail;
