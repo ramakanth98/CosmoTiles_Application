@@ -156,4 +156,9 @@ input[type='number'] {
     margin: 0 10px; /* Add some margin around each button */
 }
 
+.grand-total-container {
+  display: inline-block; /* or use inline-flex if you want to control the alignment */
+}
+
+
 

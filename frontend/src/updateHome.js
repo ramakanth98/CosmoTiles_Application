@@ -1,53 +1,75 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useParams, useNavigate } from 'react-router-dom';
 import './styles.css';
 import logo from './Cos_NoBG.png'
 
-const NewPost = () => {
+const UpdateHome = () => {
+  const { homeId } = useParams(); // Assuming you're using URL params to get the home's ID
   const [title, setTitle] = useState('');
   const [address, setAddress] = useState('');
   const [file, setFile] = useState(null);
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
-  const submitPost = async () => {
+  useEffect(() => {
+    // Fetch the existing home details
+    const fetchHomeDetails = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/homes/${homeId}`);
+        setTitle(response.data.data.home);
+        setAddress(response.data.data.address);
+        // Note: File handling will depend on how your backend serves files
+      } catch (error) {
+        console.error("Error fetching home data", error);
+        setError(error.message);
+      }
+    };
+
+    fetchHomeDetails();
+  }, [homeId]);
+  const navigate = useNavigate();
+  const submitUpdate = async () => {
     const formData = new FormData();
     formData.append('title', title);
     formData.append('address', address);
-    formData.append('file', file);
+    if (file) {
+      formData.append('file', file);
+    }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/newpost', formData, {
+      const response = await axios.put(`http://localhost:5000/api/updatehome/${homeId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      console.log("Data saved successfully");
-      setSuccessMsg("Home added successfully!");
-
+      console.log("Data updated successfully");
+      
+      setSuccessMsg("Home updated successfully!");
+      
       setTimeout(() => {
         setSuccessMsg('');
-      }, 3000);
-
+        navigate('/');
+      }, 1000);
+      
     } catch (error) {
-      console.error("Error saving data", error);
+      console.error("Error updating data", error);
       setError(error.message);
     }
   };
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
-    await submitPost();
+    await submitUpdate();
   };
 
   return (
     <>
       <header className="flex-row">
-       <Link to="/">
-               <img src={logo} alt="Cosmo Tiles Logo" className="logo" /> {/* Logo only appears once */}
-             </Link>
+      <Link to="/">
+        <img src={logo} alt="Cosmo Tiles Logo" className="logo" /> {/* Logo only appears once */}
+      </Link>
       </header>
       <main>
         {error && (
@@ -94,7 +116,7 @@ const NewPost = () => {
                 onChange={(e) => setFile(e.target.files[0])}
               />
             </div>
-            <button type="submit" className="accent-btn">Submit</button>
+            <button type="submit" className="accent-btn">Update</button>
           </form>
         </div>
       </main>
@@ -102,4 +124,4 @@ const NewPost = () => {
   );
 };
 
-export default NewPost;
+export default UpdateHome;

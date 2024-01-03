@@ -7,65 +7,36 @@ import './report.css';
 
 
 const initialRowData = [
-    // Assuming this structure based on your description
-    // Repeat this for each table with appropriate WorkName and Price
-    { workName: 'shower wall', sqft: "", price: 10, total: 0 },
-        { workName: 'Accent/2nd Gount', sqft: "", price: 100, total: 0 },
-        { workName: 'Bench Seat', sqft: "", price: 100, total: 0 },
-        { workName: 'Better Bench', sqft: "", price: 100, total: 0 },
-        { workName: 'Corner Shelf', sqft: "", price: 100, total: 0 },
-        { workName: 'Single Niche', sqft: "", price: 100, total: 0 },
-        { workName: 'Combo Niche', sqft: "", price: 100, total: 0 },
-        { workName: 'XL Niche', sqft: "", price: 100, total: 0 },
-        { workName: 'Shower Floor', sqft: "", price: 100, total: 0 },
-        { workName: 'Shower Drain Grind', sqft: "", price: 100, total: 0 },
-        { workName: 'Floor Tile', sqft: "", price: 100, total: 0 },
-        { workName: 'Windows/Jambs', sqft: "", price: 100, total: 0 },
+    { id: 1, size: 'E4402', description: 'Satin Gold Ebbe, Square', quantity: '' },
+      { id: 2, size: '4X12', description: 'MYTHOLOGY, Santorini, Undulated- MY90', quantity: '' },
+      { id: 3, size: '12X20', description: 'Combo Niche (Take From Shop)', quantity: '' },
+      { id: 4, size: '1X3', description: 'Elect, Beige, Herringbone- EL31', quantity: '' },
+      { id: 5, size: '12X24', description: 'RESILIENCE, Vitality White- RL20', quantity: '' },
+      { id: 6, size: 'GROUT', description: 'Prism Bleached Wood (545)', quantity: '' },
+      { id: 7, size: 'CAULK', description: 'Bleached Wood Sanded', quantity: '' },
+      { id: 8, size: '3X6', description: 'VITRUVIAN, White,VV10', quantity: '' },
+      { id: 9, size: '12x24', description: 'URBANIZE, White, UB02', quantity: '' },
+      { id: 10, size: '3X6', description: 'VITRUVIAN, White,VV10', quantity: '' },
+      { id: 11, size: '12x24', description: 'URBANIZE, White, UB02', quantity: '' },
+      { id: 12, size: 'Grout', description: 'Prism Ash (642)', quantity: '' },
+      { id: 13, size: 'CAULK', description: 'ASH Wood Sanded', quantity: '' },
+      { id: 14, size: '12x24', description: 'URBANIZE, Grey, UB04', quantity: '' },
+      { id: 15, size: '12x12', description: 'MEMOIR, Petal Grey, ME20', quantity: '' },
+      { id: 16, size: 'GROUT', description: 'Prism Winter Gray (335)', quantity: '' },
+      { id: 17, size: 'GROUT', description: 'Prism Ash (642)', quantity: '' },
+      { id: 18, size: 'CAULK', description: 'ASH Wood SANDED', quantity: '' },
+      { id: 19, size: 'CAULK', description: 'GRAY Wood SANDED', quantity: '' },
+      //need to add sub categories
 ];
 
-const initialKitchenData = [
-  { workName: 'Material Handling Fees', sqft: "", price: 150, total: 0 },
-  { workName: 'Great Room FirePlace', sqft: "", price: 120, total: 0 },
-  { workName: 'Laundry', sqft: "", price: 150, total: 0 },
-  { workName: 'Extra:', sqft: "", price: 120, total: 0 },
-
-];
-
-const initialTablesData = new Array(6).fill(null).map(() => initialRowData.map(row => ({ ...row })));
-
-//const puppeteer = require('puppeteer');
-
-/*async function printPDF() {
-  const browser = await puppeteer.launch({ headless: true });
-  const page = await browser.newPage();
-  await page.goto('http://localhost:3000/report', { waitUntil: 'networkidle0' });
-  const pdf = await page.pdf({ format: 'A4' });
-
-  await browser.close();
-  return pdf;
-}*/
 
 
-const Report = () => {
+
+const TileOrderReport = () => {
   const [tables, setTables] = useState(initialTablesData);
   const [kitchenTable, setKitchenTable] = useState(initialKitchenData);
   let { homeId } = useParams();
 
-  const handleSqftChange = (tableIndex, rowIndex, value) => {
-    const updatedTables = tables.map((table, tIndex) => {
-      if (tIndex === tableIndex) {
-        return table.map((row, rIndex) => {
-          if (rIndex === rowIndex) {
-            const total = parseFloat(value) * row.price;
-            return { ...row, sqft: value, total: isNaN(total) ? 0 : total.toFixed(2) };
-          }
-          return row;
-        });
-      }
-      return table;
-    });
-    setTables(updatedTables);
-  };
 
   const calculateTableTotal = (table) => {
     return table.reduce((acc, row) => acc + parseFloat(row.total || 0), 0).toFixed(2);
@@ -86,42 +57,12 @@ const Report = () => {
     return kitchenTable.reduce((acc, row) => acc + parseFloat(row.total || 0), 0).toFixed(2);
   };
 
-  const calculateGrandTotal = () => {
-    // Calculate the total for all Bath tables
-    const bathTotal = tables.reduce((acc, table) => {
-      return acc + parseFloat(calculateTableTotal(table));
-    }, 0);
-
-    // Calculate the total for the Kitchen table
-    const kitchenTotal = parseFloat(calculateKitchenTableTotal());
-
-    // Calculate the grand total
-    const grandTotal = bathTotal + kitchenTotal;
-
-    return grandTotal.toFixed(2); // Convert it to a fixed decimal place
-  };
-
-  /*const downloadReportAsPDF = () => {
-    html2canvas(document.body, {
-      scale: 2, // Increase or decrease scale to fit the content
-      useCORS: true // This can help with images, if you have any
-    }).then((canvas) => {
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'landscape',
-        unit: 'px',
-        format: 'a4'
-      });
-      pdf.addImage(imgData, 'JPEG', 0, 0);
-      pdf.save('report.pdf');
-    });
-  };*/
 
   const downloadPDFDirectly = () => {
           axios.get(`http://localhost:5000/api/homes/${homeId}`)
               .then(response => {
-                  if (response.data && response.data.data && response.data.data.screport_url) {
-                      const pdfUrl = response.data.data.screport_url;
+                  if (response.data && response.data.data && response.data.data.invoice_url) {
+                      const pdfUrl = response.data.data.invoice_url;
                       window.open(pdfUrl, '_blank');
                   } else {
                       alert("No PDF available for download.");
@@ -160,14 +101,14 @@ const Report = () => {
       grandTotal: calculateGrandTotal()
   };
 
-  axios.post('http://localhost:5000/generate-pdf', reportData, {
+  axios.post('http://localhost:5000/generateinvoice-pdf', reportData, {
       responseType: 'blob'
   })
     .then(response => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', 'subpay_report.pdf');
+        link.setAttribute('download', 'invoice_report.pdf');
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
@@ -256,19 +197,16 @@ const Report = () => {
                     <td>{calculateKitchenTableTotal()}</td>
                   </tr>
                   <div className="col-12">
-                          <center>
-                            <h2 className="grand-total-heading">Grand Total</h2>
-                            <div className="grand-total">{calculateGrandTotal()}</div>
-                          </center>
-
+                          <h2 className="grand-total-heading">Grand Total</h2>
+                          <div className="grand-total">{calculateGrandTotal()}</div>
                         </div>
                 </tfoot>
               </table>
             </div>
           </div>
       <div className="btn-container">
-          <button onClick={downloadReportAsPDF} className="btn btn-primary btn-block">
-            Generate Report
+          <button onClick={downloadReportAsPDF} className="btn btn-primary">
+              Generate Report
           </button>
 
           <button onClick={downloadPDFDirectly} className="btn btn-secondary">
@@ -279,4 +217,4 @@ const Report = () => {
   );
 };
 
-export default Report;
+export default TileOrderReport;
